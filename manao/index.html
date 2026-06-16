@@ -116,7 +116,7 @@ body.calm .face{animation:floaty 3s ease-in-out infinite;}
 
 <div class="wrap" id="game">
   <h1 class="title">कलश का गुस्सा मीटर 🔥</h1>
-  <p class="subtitle">गुस्सा full है! Ashish को मनाना पड़ेगा 😤</p>
+  <p class="subtitle">गुस्सा full है — और इस बार तुम्हारी असली शिकायतों के साथ 😏</p>
 
   <div class="face" id="face">😡</div>
 
@@ -133,7 +133,7 @@ body.calm .face{animation:floaty 3s ease-in-out infinite;}
 <div class="wrap win" id="win">
   <svg class="win-flower" viewBox="0 0 200 200"><use href="#sf" xlink:href="#sf"></use></svg>
   <h2 class="win-title">माफ़ किया! 😘🌻</h2>
-  <p class="win-sub">ठीक है ठीक है… गुस्सा ख़त्म।<br>पर अगली बार ध्यान रखना, वरना मीटर फिर भर जाएगा! 😏<br><br>तुम जब हँसती हो ना — मेरा सारा दिन बन जाता है। 💛</p>
+  <p class="win-sub">ठीक है ठीक है… गुस्सा ख़त्म! 🎉<br>बंदरी 🐒, अब मुस्कुरा भी दो — मीटर 0 हो गया 😘<br><br>तुम जब हँसती हो ना — मेरा सारा दिन बन जाता है।<br>Rohit की कसम, अब हमेशा तुम्हारी ही side 💛</p>
   <p class="win-sign">— हमेशा तुम्हारा, Ashish 🌻</p>
   <button class="btn" id="replay" style="margin-top:1.4rem">↺ फिर से गुस्सा करो 😄</button>
 </div>
@@ -176,7 +176,18 @@ body.calm .face{animation:floaty 3s ease-in-out infinite;}
     {t:"बोला 'मैं busy था यार' 🙄", d:+12},
     {t:"दोस्तों के साथ cricket देखने चला गया 🏏", d:+9}
   ];
-  var JACKPOT = {t:"💥 JACKPOT! Ashish ने सबके सामने propose कर दिया — 'I LOVE YOU KALASH!' 💍🌻", d:-40};
+  var JACKPOT = {t:"💥 JACKPOT! Ashish ने सबके सामने कह दिया — 'I LOVE YOU KALASH!' 💍🌻", d:-40};
+
+  // ── असली शिकायतें (our real story) — Ashish confesses to each ──
+  var CONFESS = [
+    {t:"माना… मैंने तुम्हें 'बंदरी' कहा था 🐒 — पर सच? तुम मेरी सबसे क्यूट बंदरी हो 🙈❤️", d:-20},
+    {t:"रात को तुम्हारे मज़े लिए थे 😅 — अब promise, इतना तंग नहीं करूँगा (थोड़ा तो हक़ बनता है 😇)", d:-18},
+    {t:"वो 'I love you' वाली punishment याद है? 😘 — अब वो सज़ा नहीं, रोज़ का प्यार है 💌", d:-20},
+    {t:"सुबह तुम्हारा फ़ोन नहीं उठाया 📵😔 — गलती मेरी। अब पहली ही ring पे उठाऊँगा, कसम 🤙", d:-22},
+    {t:"Rohit की side ली थी तुम्हारे सामने 🤦‍♂️ — सबसे बड़ी गलती। अब हमेशा सिर्फ़ तुम्हारी side 💯", d:-22},
+    {t:"तुम्हें ढंग से मनाया नहीं था ना… 😞 इसलिए तो ये पूरा game बना डाला — सिर्फ़ तुम्हारे लिए 🌻", d:-25}
+  ];
+  var confessQueue = CONFESS.slice();
 
   function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
 
@@ -226,8 +237,11 @@ body.calm .face{animation:floaty 3s ease-in-out infinite;}
     var roll = Math.random();
     var action;
     var isJack=false;
-    if(roll < 0.08 && anger>30){ action=JACKPOT; isJack=true; }
-    else if(roll < 0.70){ action=pick(DOWN); }
+    if(roll < 0.07 && anger>35 && !confessQueue.length){ action=JACKPOT; isJack=true; }
+    else if(roll < 0.80){
+      // good move — show the real confessions first, then generic ones
+      action = confessQueue.length ? confessQueue.shift() : pick(DOWN);
+    }
     else { action=pick(UP); }
 
     anger += action.d;
@@ -284,6 +298,7 @@ body.calm .face{animation:floaty 3s ease-in-out infinite;}
 
   document.getElementById("replay").addEventListener("click", function(){
     anger=100;taps=0;fx.innerHTML="";
+    confessQueue = CONFESS.slice();
     document.getElementById("win").classList.remove("show");
     document.getElementById("game").style.display="";
     bubble.style.fontSize="";
