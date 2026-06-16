@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>कलश का गुस्सा मीटर 🔥</title>
+<style>
+:root{
+  --gold:#FDB813;--amber:#F4A300;--red:#C0392B;--leaf:#4E8C4A;
+  --ink:#3a1a00;--cream:#FFF8EC;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{min-height:100%;overflow-x:hidden;}
+body{
+  font-family:"Nirmala UI","Mangal","Noto Sans Devanagari","Georgia",serif;
+  min-height:100vh;color:var(--cream);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:1.4rem 1.1rem;
+  background:linear-gradient(180deg,#7a0000,#c0392b 55%,#e25822);
+  transition:background 1s ease;
+  -webkit-font-smoothing:antialiased;
+}
+body.shake{animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-12px);}40%{transform:translateX(12px);}60%{transform:translateX(-8px);}80%{transform:translateX(8px);}}
+
+.wrap{width:100%;max-width:560px;}
+
+.title{font-size:clamp(1.5rem,6.5vw,2.6rem);font-weight:bold;
+  text-shadow:0 2px 14px rgba(0,0,0,.45);margin-bottom:.2rem;}
+.subtitle{font-size:clamp(.9rem,3.2vw,1.15rem);opacity:.92;margin-bottom:1.2rem;}
+
+/* angry face */
+.face{font-size:clamp(4rem,20vw,8rem);line-height:1;margin:.3rem 0 .8rem;
+  display:inline-block;animation:angryShake 0.5s ease-in-out infinite;}
+body.calm .face{animation:floaty 3s ease-in-out infinite;}
+@keyframes angryShake{0%,100%{transform:rotate(-5deg) scale(1);}50%{transform:rotate(5deg) scale(1.06);}}
+@keyframes floaty{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+/* meter */
+.meter-label{font-size:clamp(1rem,4vw,1.3rem);font-weight:bold;margin-bottom:.4rem;
+  text-shadow:0 1px 6px rgba(0,0,0,.4);}
+.meter{width:100%;height:clamp(26px,7vw,40px);border-radius:999px;
+  background:rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.4);
+  overflow:hidden;box-shadow:inset 0 2px 6px rgba(0,0,0,.4);}
+.meter-fill{height:100%;width:100%;border-radius:999px;
+  background:linear-gradient(90deg,#ff4d00,#ff0000);
+  transition:width .6s cubic-bezier(.3,1.2,.5,1),background .6s ease;
+  box-shadow:0 0 18px rgba(255,60,0,.6);}
+
+/* speech bubble */
+.bubble{
+  background:rgba(255,248,236,.95);color:var(--ink);
+  border-radius:18px;padding:clamp(.9rem,3.5vw,1.3rem);
+  font-size:clamp(1.05rem,4vw,1.4rem);line-height:1.5;font-weight:600;
+  margin:1.4rem 0;min-height:3.6em;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+  position:relative;
+}
+.bubble.pop{animation:pop .45s cubic-bezier(.2,1.4,.4,1);}
+@keyframes pop{0%{transform:scale(.6);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.bubble .delta{display:block;margin-top:.4rem;font-size:.85em;font-weight:bold;}
+.bubble .down{color:#1f8b3a;}
+.bubble .up{color:#c0392b;}
+
+/* button */
+.btn{font-family:inherit;font-size:clamp(1.2rem,5vw,1.6rem);font-weight:bold;
+  padding:.8em 2em;border:none;border-radius:999px;cursor:pointer;
+  background:linear-gradient(180deg,var(--gold),var(--amber));color:#3a1a00;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  transition:transform .15s ease;animation:btnPulse 1.6s ease-in-out infinite;}
+.btn:active{transform:scale(.94);}
+@keyframes btnPulse{0%,100%{box-shadow:0 8px 24px rgba(0,0,0,.35);}50%{box-shadow:0 8px 34px rgba(253,184,19,.7);}}
+.tap-count{margin-top:.9rem;font-size:.9rem;opacity:.8;}
+
+/* WIN */
+.win{display:none;}
+.win.show{display:block;animation:fadeUp .8s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.win-flower{width:clamp(120px,30vw,180px);height:clamp(120px,30vw,180px);margin:0 auto 1rem;display:block;
+  animation:bloom 1s cubic-bezier(.2,.9,.2,1) both,floaty 4s ease-in-out 1s infinite;
+  filter:drop-shadow(0 12px 16px rgba(0,0,0,.3));}
+@keyframes bloom{from{transform:scale(.2) rotate(-30deg);opacity:0;}to{transform:scale(1);opacity:1;}}
+.win-title{font-size:clamp(1.8rem,7vw,3rem);font-weight:bold;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.4);margin-bottom:.5rem;}
+.win-sub{font-size:clamp(1.05rem,3.8vw,1.4rem);line-height:1.7;opacity:.95;}
+.win-sign{margin-top:1.2rem;font-size:clamp(1rem,3.6vw,1.3rem);font-weight:bold;color:#fff;}
+
+/* particles */
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:40;}
+.particle{position:absolute;will-change:transform;}
+.petal{top:-6vh;border-radius:90% 10% 90% 10%/90% 10% 90% 10%;
+  background:linear-gradient(160deg,#FFE08A,#FDB813 55%,#F4A300);}
+.ember{top:auto;bottom:-5vh;font-size:1.3rem;}
+@keyframes fall{0%{transform:translate(0,-8vh) rotate(0);opacity:0;}10%{opacity:1;}100%{transform:translate(var(--d),110vh) rotate(var(--r));opacity:0;}}
+@keyframes rise{0%{transform:translate(0,0);opacity:0;}10%{opacity:.9;}100%{transform:translate(var(--d),-115vh);opacity:0;}}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none !important;}#fx{display:none;}
+  body.shake{animation:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- sunflower svg for win -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<radialGradient id="cg" cx="50%" cy="42%" r="60%"><stop offset="0%" stop-color="#8a5a2b"/><stop offset="55%" stop-color="#6b4423"/><stop offset="100%" stop-color="#43290f"/></radialGradient>
+<linearGradient id="pg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFE08A"/><stop offset="55%" stop-color="#FDB813"/><stop offset="100%" stop-color="#F4A300"/></linearGradient>
+<symbol id="sf" viewBox="0 0 200 200">
+<g fill="url(#pg)">
+<g transform="rotate(0 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(30 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(60 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(90 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(120 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(150 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(180 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(210 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(240 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(270 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(300 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g><g transform="rotate(330 100 100)"><ellipse cx="100" cy="48" rx="12" ry="36"/></g>
+</g>
+<circle cx="100" cy="100" r="38" fill="url(#cg)"/><circle cx="100" cy="100" r="38" fill="none" stroke="#caa14a" stroke-width="2.5" opacity=".5"/>
+</symbol>
+</defs></svg>
+
+<div class="wrap" id="game">
+  <h1 class="title">कलश का गुस्सा मीटर 🔥</h1>
+  <p class="subtitle">गुस्सा full है! Ashish को मनाना पड़ेगा 😤</p>
+
+  <div class="face" id="face">😡</div>
+
+  <div class="meter-label" id="meterLabel">गुस्सा: 100% 🔥🔥🔥</div>
+  <div class="meter"><div class="meter-fill" id="fill"></div></div>
+
+  <div class="bubble" id="bubble">नीचे वाला बटन दबाओ… देखें Ashish क्या-क्या करता है 😏</div>
+
+  <button class="btn" id="btn">🙏 मनाओ मुझे</button>
+  <div class="tap-count" id="tapCount"></div>
+</div>
+
+<!-- WIN -->
+<div class="wrap win" id="win">
+  <svg class="win-flower" viewBox="0 0 200 200"><use href="#sf" xlink:href="#sf"></use></svg>
+  <h2 class="win-title">माफ़ किया! 😘🌻</h2>
+  <p class="win-sub">ठीक है ठीक है… गुस्सा ख़त्म।<br>पर अगली बार ध्यान रखना, वरना मीटर फिर भर जाएगा! 😏<br><br>तुम जब हँसती हो ना — मेरा सारा दिन बन जाता है। 💛</p>
+  <p class="win-sign">— हमेशा तुम्हारा, Ashish 🌻</p>
+  <button class="btn" id="replay" style="margin-top:1.4rem">↺ फिर से गुस्सा करो 😄</button>
+</div>
+
+<div id="fx" aria-hidden="true"></div>
+
+<script>
+(function(){
+  var reduce = matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+  var coarse = matchMedia&&matchMedia("(hover:none) and (pointer:coarse)").matches;
+
+  var anger = 100;
+  var taps = 0;
+  var body = document.body;
+  var fill = document.getElementById("fill");
+  var face = document.getElementById("face");
+  var label = document.getElementById("meterLabel");
+  var bubble = document.getElementById("bubble");
+  var btn = document.getElementById("btn");
+  var tapCount = document.getElementById("tapCount");
+  var fx = document.getElementById("fx");
+
+  // ── funny actions (delta = anger change) ──
+  var DOWN = [
+    {t:"Ashish घुटनों के बल बैठ गया 🧎‍♂️", d:-12},
+    {t:"50 बार 'सॉरी सॉरी सॉरी' रट लिया 📚", d:-10},
+    {t:"सबको बता दिया — 'Kalash is always right' 📢", d:-14},
+    {t:"तुम्हारी पुरानी सारी photos फिर से देखीं 🥺📸", d:-9},
+    {t:"बोला: 'आज खाना मैं बनाऊँगा, तुम आराम करो' 🍳", d:-13},
+    {t:"एक सूरजमुखी लेकर खड़ा है दरवाज़े पे 🌻", d:-15},
+    {t:"तुम्हारा favourite gाना गाने लगा (बेसुरा) 🎤😬", d:-8},
+    {t:"पूरी रात तुम्हारे messages पढ़ता रहा 💬", d:-10},
+    {t:"बोला: 'तुम्हारे बिना मैं अधूरा हूँ' (और रोने लगा) 😭", d:-13},
+    {t:"तुम्हारे लिए chocolate + golgappe order कर दिए 🍫", d:-12}
+  ];
+  var UP = [
+    {t:"Ashish: 'तुम over-react कर रही हो'… 😳", d:+16},
+    {t:"फिर से 10 min late reply किया 📵", d:+10},
+    {t:"तुम्हारी DP like करना भूल गया 💔", d:+7},
+    {t:"बोला 'मैं busy था यार' 🙄", d:+12},
+    {t:"दोस्तों के साथ cricket देखने चला गया 🏏", d:+9}
+  ];
+  var JACKPOT = {t:"💥 JACKPOT! Ashish ने सबके सामने propose कर दिया — 'I LOVE YOU KALASH!' 💍🌻", d:-40};
+
+  function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
+
+  function render(){
+    anger = Math.max(0, Math.min(100, anger));
+    fill.style.width = anger + "%";
+    // color red(hot) -> green(calm)
+    var hue = (anger/100)*0 + (1-anger/100)*120; // 0=red ->120=green
+    fill.style.background = "linear-gradient(90deg,hsl("+(hue)+",85%,50%),hsl("+(hue+15)+",90%,45%))";
+    // body bg + face + label
+    var emo, txt, bg;
+    if(anger>75){emo="😡";txt="🔥🔥🔥";bg="linear-gradient(180deg,#7a0000,#c0392b 55%,#e25822)";body.classList.remove("calm");}
+    else if(anger>45){emo="😠";txt="🔥🔥";bg="linear-gradient(180deg,#8a3500,#d35400 55%,#e67e22)";body.classList.remove("calm");}
+    else if(anger>20){emo="😒";txt="🔥";bg="linear-gradient(180deg,#9a6000,#e08900 55%,#f4a300)";body.classList.remove("calm");}
+    else if(anger>0){emo="🙂";txt="✨";bg="linear-gradient(180deg,#b07d00,#f4a300 55%,#FDB813)";body.classList.add("calm");}
+    else {emo="😘";txt="💛";bg="linear-gradient(180deg,#c98a00,#FDB813 55%,#FFE08A)";body.classList.add("calm");}
+    face.textContent = emo;
+    label.textContent = "गुस्सा: " + Math.round(anger) + "% " + txt;
+    body.style.background = bg;
+  }
+
+  // ── sounds ──
+  function beep(type){
+    try{
+      var ctx=new(window.AudioContext||window.webkitAudioContext)();
+      var o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      if(type==="up"){o.type="sawtooth";o.frequency.setValueAtTime(180,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(80,ctx.currentTime+.25);}
+      else{o.type="sine";o.frequency.setValueAtTime(420,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(720,ctx.currentTime+.15);}
+      g.gain.setValueAtTime(.25,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3);
+      o.start();o.stop(ctx.currentTime+.3);
+    }catch(e){}
+  }
+
+  function showBubble(action, isJackpot){
+    var sign = action.d<0 ? "down" : "up";
+    var arrow = action.d<0 ? "▼ गुस्सा "+action.d : "▲ गुस्सा +"+action.d;
+    bubble.classList.remove("pop");void bubble.offsetWidth;
+    bubble.classList.add("pop");
+    bubble.innerHTML = action.t + "<span class='delta "+sign+"'>"+arrow+"</span>";
+    if(isJackpot){ bubble.style.fontSize="clamp(1.1rem,4.2vw,1.45rem)"; }
+  }
+
+  btn.addEventListener("click", function(){
+    taps++;
+    // weighted: 70% down, 22% up, 8% jackpot (only if anger high enough to matter)
+    var roll = Math.random();
+    var action;
+    var isJack=false;
+    if(roll < 0.08 && anger>30){ action=JACKPOT; isJack=true; }
+    else if(roll < 0.70){ action=pick(DOWN); }
+    else { action=pick(UP); }
+
+    anger += action.d;
+    showBubble(action, isJack);
+    render();
+    tapCount.textContent = "मनाने की कोशिश: " + taps + " बार";
+
+    if(action.d>0){ body.classList.remove("shake");void body.offsetWidth;body.classList.add("shake"); if(!reduce)beep("up"); }
+    else { if(!reduce)beep("down"); if(!reduce&&isJack) burst(coarse?40:80); else if(!reduce) burst(coarse?6:12); }
+
+    if(anger<=0){ setTimeout(winNow, 650); }
+  });
+
+  function winNow(){
+    document.getElementById("game").style.display="none";
+    document.getElementById("win").classList.add("show");
+    if(!reduce) burst(coarse?60:120);
+  }
+
+  // ── particles ──
+  function burst(n){
+    for(var i=0;i<n;i++){
+      var p=document.createElement("div");
+      p.className="particle petal";
+      var s=10+Math.random()*14,dur=4+Math.random()*5;
+      p.style.left=(Math.random()*100)+"vw";
+      p.style.width=s+"px";p.style.height=(s*1.25)+"px";
+      p.style.setProperty("--d",(Math.random()*220-110)+"px");
+      p.style.setProperty("--r",((360+Math.random()*540)*(Math.random()<.5?-1:1))+"deg");
+      p.style.animation="fall "+dur+"s linear forwards";
+      fx.appendChild(p);
+      p.addEventListener("animationend",function(){this.remove();});
+    }
+  }
+  // ambient embers while hot
+  var emberIv=null;
+  function startEmbers(){
+    if(reduce) return;
+    emberIv=setInterval(function(){
+      if(document.hidden||anger<25) return;
+      if(fx.childElementCount>(coarse?14:30)) return;
+      var e=document.createElement("div");
+      e.className="particle ember";
+      e.textContent=Math.random()<.5?"🔥":"💢";
+      e.style.left=(Math.random()*100)+"vw";
+      var dur=4+Math.random()*4;
+      e.style.setProperty("--d",(Math.random()*120-60)+"px");
+      e.style.setProperty("--r",((Math.random()*200-100))+"deg");
+      e.style.animation="rise "+dur+"s linear forwards";
+      fx.appendChild(e);
+      e.addEventListener("animationend",function(){this.remove();});
+    }, coarse?900:600);
+  }
+
+  document.getElementById("replay").addEventListener("click", function(){
+    anger=100;taps=0;fx.innerHTML="";
+    document.getElementById("win").classList.remove("show");
+    document.getElementById("game").style.display="";
+    bubble.style.fontSize="";
+    bubble.textContent="फिर से?! ठीक है… दबाओ बटन 😏";
+    tapCount.textContent="";
+    render();
+  });
+
+  render();
+  startEmbers();
+})();
+</script>
+</body>
+</html>
